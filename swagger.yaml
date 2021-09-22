@@ -1,5 +1,8 @@
 swagger: '2.0'
 
+############################################################################
+#                            API Information                               #
+############################################################################
 info:
   description: 'API e-Commerce Compra Fácil.'
   version: 1.0.0
@@ -9,6 +12,22 @@ info:
 host: comprafacil.com.br
 basePath: /v1
 
+############################################################################
+#                                   TAGS                                   #
+############################################################################
+tags:
+  - name: produtos
+    description: Realiza as operações relacionadas aos produtos
+  - name: afiliados
+    description: Realiza as operações relacionadas às afiliações
+schemes:
+  - http
+
+############################################################################
+#                                     Paths                                #
+############################################################################
+
+#### Produtos
 paths:
   /produtos/{id}:
     get:
@@ -30,6 +49,109 @@ paths:
           description: 'Busca realizada com sucesso'
           schema:
             $ref: '#/definitions/Produtos'
+        400:
+          description: 'A requisição não pôde processada pelo servidor devido a um erro no cliente.'
+          schema:
+            $ref: '#/definitions/BadRequest'
+        401:
+          description: 'Usuário não autenticado para realizar a operação'
+          schema:
+            $ref: '#/definitions/Unauthorized'
+        403:
+          description: 'Usuário não possui permissão para criar uma afiliação'
+          schema:
+            $ref: '#/definitions/Forbidden'
+        408:
+          description: 'Tempo excedido'
+          schema:
+            $ref: '#/definitions/Timeout'
+        429:
+          description: 'Usuário submeteu muitas requisições em um intervalo de tempo'
+          schema:
+            $ref: '#/definitions/TooManyResquests'
+        500:
+          description: 'Erro inesperado'
+          schema:
+            $ref: '#/definitions/InternalServerError'
+        503:
+          description: 'Serviço indisponível'
+          schema:
+            $ref: '#/definitions/Unavailable'
+#### Afiliados
+  /afiliados/criar:
+    post:
+      tags:
+        - afiliados
+      summary: Cria uma afiliação
+      description: 'Permite a criação de uma afiliação entre um usuário e o e-Commerce. '
+      operationId: criaAfiliacao
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: objeto afiliacao serializado
+          required: true
+          schema:
+            $ref: '#/definitions/Afiliacao'
+      responses:
+        201:
+          description: 'Afiliacao criada com sucesso'
+          schema:
+            $ref: '#/definitions/Afiliacao'
+        400:
+          description: 'A requisição não pôde processada pelo servidor devido a um erro no cliente.'
+          schema:
+            $ref: '#/definitions/BadRequest'
+        401:
+          description: 'Usuário não autenticado para realizar a operação'
+          schema:
+            $ref: '#/definitions/Unauthorized'
+        403:
+          description: 'Usuário não possui permissão para criar uma afiliação'
+          schema:
+            $ref: '#/definitions/Forbidden'
+        408:
+          description: 'Tempo excedido'
+          schema:
+            $ref: '#/definitions/Timeout'
+        429:
+          description: 'Usuário submeteu muitas requisições em um intervalo de tempo'
+          schema:
+            $ref: '#/definitions/TooManyResquests'
+        500:
+          description: 'Erro inesperado'
+          schema:
+            $ref: '#/definitions/InternalServerError'
+        503:
+          description: 'Serviço indisponível'
+          schema:
+            $ref: '#/definitions/Unavailable'
+  /afiliados/{id}:
+    put:
+      tags:
+        - afiliados
+      summary: Atualiza os cados cadastrais de um afiliado, baseado no id 
+      description: 'Permite a alteraçao dos dados cadastrais de um afiliado já cadastrado no e-Commerce. '
+      operationId: updateAfiliacao
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: objeto afiliacao serializado
+          required: true
+          schema:
+            $ref: '#/definitions/Afiliacao'
+      responses:
+        200:
+          description: 'Afiliacao criada com sucesso'
+          schema:
+            $ref: '#/definitions/Afiliacao'
         400:
           description: 'A requisição não pôde processada pelo servidor devido a um erro no cliente.'
           schema:
@@ -114,6 +236,72 @@ definitions:
             ]
     xml:
       name: Produtos
+  Afiliacao:
+    type: object
+    required:
+      - nome
+      - email
+      - cpf
+      - phone
+      - endereco
+      - categoria
+    properties:
+      nome:
+        type: string
+        description: 'Nome do afiliado'
+        example: 'João Paulo'
+        minLength: 5
+        maxLength: 255
+      razao_social:
+        type: string
+        description: 'A razão social da empresa'
+        example: 'Minha Empresa LTDA'
+        minLength: 5
+        maxLength: 255
+      responsavel:
+        description: 'Nome do responsável pela afiliação. Não é necessariamente o afiliado.'
+        example: 'Maria Paula'
+        minLength: 5
+        maxLength: 255
+      email:
+        description: 'Email do responsável pela afiliação'
+        example: 'mariapaula@g.unicamp.br'
+        minLength: 5
+        maxLength: 100
+      cpf:
+        type: string
+        description: 'CPF do responsável pela afiliação (com ou sem pontos e traços)'
+        example: '111.222.333-44'
+        minLength: 11
+        maxLength: 14
+      phone:
+        type: array
+        description: 'Telefones de contato do responsável pela afiliação. Vários números são permitidos (pessoal, comercial, celular)'
+        items:
+          type: string
+          example: [
+            '(11) 9 1234-5678',
+            '(11) 1111-22222'
+          ]
+      endereco:
+        type: array
+        items:
+          type: string
+          example: [
+            'Avenida Paulista, 1200, São Paulo',
+            'Avenida Brigadeiro Faria Lima, 2300, São Paulo'
+          ]
+          minLength: 10
+          maxLength: 255
+      categoria:
+        type: string
+        description: 'Categoria na qual o afiliado se enquadra. E.g.: esportes, tecnologia, perfumes, saúde, etc.'
+        example: 'Tecnologia'
+        minLength: 10
+        maxLength: 255
+    xml:
+      name: Afiliacao
+
 ############################################################################
 #                                 Responses                                #
 ############################################################################
@@ -235,3 +423,26 @@ definitions:
         type: string
         description: 'Timestamp da execução da requisição'
         example: '2021-09-21T17:32:28Z'
+
+############################################################################
+#                           Security Definitions                           #
+############################################################################
+securityDefinitions:
+  api_key:
+    type: apiKey
+    name: api_key
+    in: header
+  petstore_auth:
+    type: oauth2
+    authorizationUrl: https://petstore.swagger.io/oauth/authorize
+    flow: implicit
+    scopes:
+      read:pets: read your pets
+      write:pets: modify pets in your account
+
+############################################################################
+#                              External Docs                               #
+############################################################################
+externalDocs:
+  description: 'Ajuda'
+  url: https://devportal.comprafacil.com.br/help
