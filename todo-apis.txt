@@ -1,0 +1,100 @@
+Maketplace com problemas -> desatualizado
+
+Base url: api-comprafacil.com.br/api/v1
+1. Cabecalho produtos - B
+Endpoints
+
+2. GET /produtos -> Success 200 - B
+?nome
+?categoria
+?minPreco
+?maxPreco
+?desconto
+?ordenacao= [maisvendido, lancamento]
+?sortPreco= [ASC,DESC]
+
+3. GET /produtos/{id} -> Success 200 - H
+
+referencia
+{
+id    string
+nome	string
+sku	  string
+emEstoque	string
+preco	string
+descricao	  string
+detalhes	string[]
+}
+--------------------------------
+4. Cabecalho afiliados - H
+
+5. POST /afiliados -> Created 201 - J
+
+body:
+
+{
+nome	string
+razaoSocial	string
+responsavel	string
+email	string
+cpf	string
+phone	integer($int32)
+endereco string[]
+categoria string
+}
+
+response:
+
+{
+id    string
+nome	string
+razaoSocial	string
+responsavel	string
+email	string
+cpf	  string
+phone	integer($int32)
+endereco string[]
+categoria string
+urlPromo  string
+}
+
+
+6. PUT /afiliados/{id} - J
+
+body:
+
+{
+nome	string
+razaoSocial	string
+responsavel	string
+email	string
+phone	integer($int32)
+endereco string[]
+categoria string
+}
+
+response:
+
+{
+id    string
+nome	string
+razaoSocial	string
+responsavel	string
+email	string
+cpf	  string
+phone	integer($int32)
+endereco string[]
+categoria string
+urlPromo  string
+}
+
+7. DELETE /afiliados/{id} -> No content 204 - P 
+
+8. GET /afiliados -> Success 200 - P
+
+
+Erros gerais:
+401
+403
+404
+503

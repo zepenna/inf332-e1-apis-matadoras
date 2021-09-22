@@ -1,0 +1,237 @@
+swagger: '2.0'
+
+info:
+  description: 'API e-Commerce Compra Fácil.'
+  version: 1.0.0
+  title: 'e-Commerce Compra Fácil'
+  contact:
+    email: equipe1@g.unicamp.br
+host: comprafacil.com.br
+basePath: /v1
+
+paths:
+  /produtos/{id}:
+    get:
+      tags:
+        - produtos
+      summary: busca por produto de acordo com seu id 
+      description: 'Permite a busca por produtos cadastrados e-Commerce, de acordo com seu id. '
+      operationId: buscaProdutoId
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: "path"
+          description: id do produto que se quer buscar
+          required: true
+          type: string
+      responses:
+        200:
+          description: 'Busca realizada com sucesso'
+          schema:
+            $ref: '#/definitions/Produtos'
+        400:
+          description: 'A requisição não pôde processada pelo servidor devido a um erro no cliente.'
+          schema:
+            $ref: '#/definitions/BadRequest'
+        401:
+          description: 'Usuário não autenticado para realizar a operação'
+          schema:
+            $ref: '#/definitions/Unauthorized'
+        403:
+          description: 'Usuário não possui permissão para criar uma afiliação'
+          schema:
+            $ref: '#/definitions/Forbidden'
+        408:
+          description: 'Tempo excedido'
+          schema:
+            $ref: '#/definitions/Timeout'
+        429:
+          description: 'Usuário submeteu muitas requisições em um intervalo de tempo'
+          schema:
+            $ref: '#/definitions/TooManyResquests'
+        500:
+          description: 'Erro inesperado'
+          schema:
+            $ref: '#/definitions/InternalServerError'
+        503:
+          description: 'Serviço indisponível'
+          schema:
+            $ref: '#/definitions/Unavailable'
+
+############################################################################
+#                               Definitions                                #
+############################################################################
+definitions:
+  Produtos:
+    type: object
+    required:
+      - nome
+      - sku
+      - emEstoque
+      - preco
+      - descricao
+      - detalhes
+    properties:
+      nome:
+        type: string
+        description: 'Nome do produto'
+        example: 'Samsung Book'
+        minLength: 5
+        maxLength: 255
+      sku:
+        type: string
+        description: 'SKU do produto'
+        example: 'MY-SKU-34521'
+        minLength: 5
+        maxLength: 255
+      emEstoque:
+        type: integer
+        format: int32
+        description: 'Quantidade de unidades do produto em estoque'
+        example: 1000
+      preco:
+        type: number
+        format: double
+        description: 'Preço de uma unidade do produto (R$)'
+        example: 3999.99
+      descricao:
+        type: string
+        description: 'Descrição do produto'
+        example: 'O notebook Samsung Book oferece uma variedade de portas, tais como: USB A, Micro SD, Kensington Lock, HDMI, USB-C®, LAN e Áudio (combo) que podem ser utilizadas para melhorar conectividade e produtividade.'
+        minLength: 10
+        maxLength: 10000
+      detalhes:
+        description: 'Detalhes técnicos do produto'
+        type: array
+        items:
+          type: array
+          items:
+            type: string
+            example: [
+              'Memória RAM',
+              '16Gb DDR4 2666MHz'
+            ]
+    xml:
+      name: Produtos
+############################################################################
+#                                 Responses                                #
+############################################################################
+  BadRequest:
+    type: object
+    properties:
+      error_message:
+        type: string
+        description: 'A requisição não pôde processada pelo servidor devido a um erro no cliente'
+        example: 'A requisição não pôde processada pelo servidor devido a um erro no cliente'
+      status:
+        type: integer
+        format: int32
+        description: 'Código HTTP da requisição'
+        example: 400
+      timestamp:
+        type: string
+        description: 'Timestamp da execução da requisição'
+        example: '2021-09-21T17:32:28Z'
+
+  Unauthorized:
+    type: object
+    properties:
+      error_message:
+        type: string
+        description: 'Usuário não autenticado para realizar a operação'
+        example: 'Usuário não autenticado para realizar a operação'
+      status:
+        type: integer
+        format: int32
+        description: 'Código HTTP da requisição'
+        example: 401
+      timestamp:
+        type: string
+        description: 'Timestamp da execução da requisição'
+        example: '2021-09-21T17:32:28Z'
+
+  Forbidden:
+    type: object
+    properties:
+      error_message:
+        type: string
+        description: 'Usuário não possui permissão para este recurso'
+        example: 'Usuário não possui permissão para este recurso'
+      status:
+        type: integer
+        format: int32
+        description: 'Código HTTP da requisição'
+        example: 403
+      timestamp:
+        type: string
+        description: 'Timestamp da execução da requisição'
+        example: '2021-09-21T17:32:28Z'
+
+  Timeout:
+    type: object
+    properties:
+      error_message:
+        type: string
+        description: 'Tempo excedido'
+        example: 'Tempo excedido'
+      status:
+        type: integer
+        format: int32
+        description: 'Código HTTP da requisição'
+        example: 408
+      timestamp:
+        type: string
+        description: 'Timestamp da execução da requisição'
+        example: '2021-09-21T17:32:28Z'
+
+  TooManyResquests:
+    type: object
+    properties:
+      error_message:
+        type: string
+        description: 'Usuário submeteu muitas requisições em um intervalo de tempo'
+        example: 'Usuário submeteu muitas requisições em um intervalo de tempo'
+      status:
+        type: integer
+        format: int32
+        description: 'Código HTTP da requisição'
+        example: 429
+      timestamp:
+        type: string
+        description: 'Timestamp da execução da requisição'
+        example: '2021-09-21T17:32:28Z'
+
+  InternalServerError:
+    type: object
+    properties:
+      error_message:
+        type: string
+        description: 'Erro inesperado'
+        example: 'Erro inesperado'
+      status:
+        type: integer
+        format: int32
+        description: 'Código HTTP da requisição'
+        example: 500
+      timestamp:
+        type: string
+        description: 'Timestamp da execução da requisição'
+        example: '2021-09-21T17:32:28Z'
+
+  Unavailable:
+    type: object
+    properties:
+      error_message:
+        type: string
+        description: 'Serviço indisponível'
+        example: 'Serviço indisponível'
+      status:
+        type: integer
+        format: int32
+        description: 'Código HTTP da requisição'
+        example: 503
+      timestamp:
+        type: string
+        description: 'Timestamp da execução da requisição'
+        example: '2021-09-21T17:32:28Z'
