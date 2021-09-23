@@ -4,12 +4,15 @@ swagger: '2.0'
 #                            API Information                               #
 ############################################################################
 info:
-  description: 'API e-Commerce Compra Fácil.'
+  description: 'API e-Commerce Compra Fácil fornece aos parceiros a
+  possibilidade de consultar produtos já cadastrados no plataforma, com base
+   em filtros intuitivos, e gerenciar o esquema de afiliações recentemente
+   anunciado em nossas redes sociais e canais de informação.'
   version: 1.0.0
   title: 'e-Commerce Compra Fácil'
   contact:
     email: equipe1@g.unicamp.br
-host: comprafacil.com.br
+host: api-comprafacil.com.br
 basePath: /v1
 
 ############################################################################
@@ -33,7 +36,7 @@ paths:
     get:
       tags:
         - produtos
-      summary: busca por produto de acordo com seu id 
+      summary: Busca por produto de acordo com seu id 
       description: 'Permite a busca por produtos cadastrados e-Commerce, de acordo com seu id. '
       operationId: buscaProdutoId
       produces:
@@ -77,6 +80,7 @@ paths:
           description: 'Serviço indisponível'
           schema:
             $ref: '#/definitions/Unavailable'
+
 #### Afiliados
   /afiliados:
     post:
@@ -197,6 +201,7 @@ paths:
           description: 'Serviço indisponível'
           schema:
             $ref: '#/definitions/Unavailable'
+
   /afiliados/{id}:
     put:
       tags:
@@ -222,7 +227,7 @@ paths:
             $ref: '#/definitions/Afiliacao'
       responses:
         200:
-          description: 'Afiliacao criada com sucesso'
+          description: 'Afiliacao atualizada com sucesso'
           schema:
             $ref: '#/definitions/Afiliacao'
         400:
