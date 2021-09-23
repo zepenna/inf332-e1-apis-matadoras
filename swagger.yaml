@@ -5,7 +5,7 @@ swagger: '2.0'
 ############################################################################
 info:
   description: 'API e-Commerce Compra Fácil fornece aos parceiros a
-  possibilidade de consultar produtos já cadastrados no plataforma, com base
+  possibilidade de consultar produtos já cadastrados na plataforma, com base
    em filtros intuitivos, e gerenciar o esquema de afiliações recentemente
    anunciado em nossas redes sociais e canais de informação.'
   version: 1.0.0
@@ -317,6 +317,10 @@ definitions:
       - descricao
       - detalhes
     properties:
+      id:
+        type: integer
+        format: int64
+        example: 1293012939
       nome:
         type: string
         description: 'Nome do produto'
