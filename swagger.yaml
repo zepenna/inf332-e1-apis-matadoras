@@ -78,7 +78,7 @@ paths:
           schema:
             $ref: '#/definitions/Unavailable'
 #### Afiliados
-  /afiliados/criar:
+  /afiliados:
     post:
       tags:
         - afiliados
@@ -129,6 +129,74 @@ paths:
           description: 'Serviço indisponível'
           schema:
             $ref: '#/definitions/Unavailable'
+    get:
+      tags:
+        - afiliados
+      summary: "Buscar afiliados"
+      description: "Permite recuperar a lista de afiliados cadastrados no CompraFacil"
+      operationId: "getAfiliados"
+      produces:
+      - "application/json"
+      parameters:
+        - in: query
+          name: _limit
+          description: Identifica o número de registros retornados.
+          type: integer
+        - in: query
+          name: _offset
+          description: Identifica o índice de paginação a ser retornado.
+          type: integer
+        - in: query
+          name: nome
+          description: Filtrar a busca pelo nome do afiliado.
+          type: string
+        - in: query
+          name: razao_social
+          description: Filtrar a busca pela razão social do afiliado.
+          type: string
+        - in: query
+          name: email
+          description: Filtrar a busca pelo e-mail do afiliado.
+          type: string
+        - in: query
+          name: cpf
+          description: Filtrar a busca pelo cpf do afiliado.
+          type: string
+      responses:
+        200:
+          description: 'Afiliados retornados com sucesso'
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Afiliados'
+        400:
+          description: 'A requisição não pôde processada pelo servidor devido a um erro no cliente.'
+          schema:
+            $ref: '#/definitions/BadRequest'
+        401:
+          description: 'Usuário não autenticado para realizar a operação'
+          schema:
+            $ref: '#/definitions/Unauthorized'
+        403:
+          description: 'Usuário não possui permissão para criar uma afiliação'
+          schema:
+            $ref: '#/definitions/Forbidden'
+        408:
+          description: 'Tempo excedido'
+          schema:
+            $ref: '#/definitions/Timeout'
+        429:
+          description: 'Usuário submeteu muitas requisições em um intervalo de tempo'
+          schema:
+            $ref: '#/definitions/TooManyResquests'
+        500:
+          description: 'Erro inesperado'
+          schema:
+            $ref: '#/definitions/InternalServerError'
+        503:
+          description: 'Serviço indisponível'
+          schema:
+            $ref: '#/definitions/Unavailable'
   /afiliados/{id}:
     put:
       tags:
@@ -141,6 +209,11 @@ paths:
       produces:
         - application/json
       parameters:
+        - in: path
+          type: string
+          name: id
+          description: Identificador do afiliado.
+          required: true
         - in: body
           name: body
           description: objeto afiliacao serializado
@@ -152,6 +225,50 @@ paths:
           description: 'Afiliacao criada com sucesso'
           schema:
             $ref: '#/definitions/Afiliacao'
+        400:
+          description: 'A requisição não pôde processada pelo servidor devido a um erro no cliente.'
+          schema:
+            $ref: '#/definitions/BadRequest'
+        401:
+          description: 'Usuário não autenticado para realizar a operação'
+          schema:
+            $ref: '#/definitions/Unauthorized'
+        403:
+          description: 'Usuário não possui permissão para criar uma afiliação'
+          schema:
+            $ref: '#/definitions/Forbidden'
+        408:
+          description: 'Tempo excedido'
+          schema:
+            $ref: '#/definitions/Timeout'
+        429:
+          description: 'Usuário submeteu muitas requisições em um intervalo de tempo'
+          schema:
+            $ref: '#/definitions/TooManyResquests'
+        500:
+          description: 'Erro inesperado'
+          schema:
+            $ref: '#/definitions/InternalServerError'
+        503:
+          description: 'Serviço indisponível'
+          schema:
+            $ref: '#/definitions/Unavailable'
+
+    delete:
+      tags:
+        - afiliados
+      summary: Remover um afiliado
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          type: string
+          name: id
+          description: Identificador do afiliado.
+          required: true
+      responses:
+        204:
+          description: 'Afiliado removido com sucesso'
         400:
           description: 'A requisição não pôde processada pelo servidor devido a um erro no cliente.'
           schema:
@@ -236,6 +353,7 @@ definitions:
             ]
     xml:
       name: Produtos
+  
   Afiliacao:
     type: object
     required:
@@ -301,6 +419,63 @@ definitions:
         maxLength: 255
     xml:
       name: Afiliacao
+  
+  Afiliados:
+    type: object
+    required:
+      - id
+      - nome
+      - email
+      - cpf
+      - phone
+      - endereco
+      - categoria
+    properties:
+      id:
+        type: string
+        description: Identificador do afiliado.
+        example: b219d842-0064-4082-b4f4-e6031448293c
+      nome:
+        type: string
+        description: Nome do afiliado.
+        example: João Paulo
+      razao_social:
+        type: string
+        description: Razão social da empresa.
+        example: Minha Empresa LTDA
+      responsavel:
+        description: Nome do responsável pela afiliação. Não é necessariamente o afiliado.
+        example: Maria Paula
+      email:
+        description: 'Email do responsável pela afiliação'
+        example: 'mariapaula@g.unicamp.br'
+        minLength: 5
+        maxLength: 100
+      cpf:
+        type: string
+        description: CPF do responsável pela afiliação (com ou sem pontos e traços).
+        example: 111.222.333-44
+      phone:
+        type: array
+        description: Telefones de contato do responsável pela afiliação. Vários números são permitidos (pessoal, comercial, celular).
+        items:
+          type: string
+          example: [
+            (11) 9 1234-5678,
+            (11) 1111-22222
+          ]
+      endereco:
+        type: array
+        items:
+          type: string
+          example: [
+            "Avenida Paulista, 1200, São Paulo",
+            "Avenida Brigadeiro Faria Lima, 2300, São Paulo"
+          ]
+      categoria:
+        type: string
+        description: Categoria na qual o afiliado se enquadra.
+        example: Tecnologia
 
 ############################################################################
 #                                 Responses                                #
