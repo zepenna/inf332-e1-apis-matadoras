@@ -24,7 +24,7 @@ tags:
   - name: afiliados
     description: Realiza as operações relacionadas às afiliações
 schemes:
-  - http
+  - https
 
 ############################################################################
 #                                     Paths                                #
@@ -64,6 +64,10 @@ paths:
           description: 'Usuário não possui permissão para criar uma afiliação'
           schema:
             $ref: '#/definitions/Forbidden'
+        404:
+          description: 'Recurso não encontrado'
+          schema:
+            $ref: '#/definitions/NotFound'
         408:
           description: 'Tempo excedido'
           schema:
@@ -71,7 +75,7 @@ paths:
         429:
           description: 'Usuário submeteu muitas requisições em um intervalo de tempo'
           schema:
-            $ref: '#/definitions/TooManyResquests'
+            $ref: '#/definitions/TooManyRequests'
         500:
           description: 'Erro inesperado'
           schema:
@@ -80,31 +84,75 @@ paths:
           description: 'Serviço indisponível'
           schema:
             $ref: '#/definitions/Unavailable'
-
-#### Afiliados
-  /afiliados:
-    post:
+  
+  /produtos:
+    get:
       tags:
-        - afiliados
-      summary: Cria uma afiliação
-      description: 'Permite a criação de uma afiliação entre um usuário e o e-Commerce. '
-      operationId: criaAfiliacao
-      consumes:
-        - application/json
+        - produtos
+      summary: "Listagem de produtos"
+      description: "Endpoint para buscar produtos do Compra Fácil. É possível filtrar produtos por nome, categoria, faixa de preco e produtos com desconto. Permite também ordenação por preço, número de vendas e data de lançamento."
+      operationId: "findProducts"
       produces:
-        - application/json
+        - "application/json"
       parameters:
-        - in: body
-          name: body
-          description: objeto afiliacao serializado
+        - name: _limit
+          in: query
+          description: Identifica o número de registros retornados.
+          type: integer
           required: true
-          schema:
-            $ref: '#/definitions/Afiliacao'
+          default: 10
+          minimum: 10
+          maximum: 50
+        - name: _offset
+          in: query
+          description: Identifica o índice de paginação a ser retornado.
+          type: integer
+          required: true
+          minimum: 1
+          default: 1
+        - name: "nome"
+          in: "query"
+          description: "Filtrar por nome do produto"
+          required: false
+          type: "string"
+        - name: "categoria" 
+          in: "query"
+          description: "Filtrar por categoria de produtos. Deve-se enviar o id da categoria. As categorias disponíveis podem ser obtidas em [/produtos/categorias](#/produtos/listaCategorias)"
+          required: false
+          type: string
+        - name: "minPreco"
+          in: "query"
+          description: "Filtrar por preço mínimo do produto"
+          required: false
+          type: "number"
+        - name: "maxPreco"
+          in: "query"
+          description: "Filtrar por preço máximo do produto"
+          required: false
+          type: "number"
+        - name: "desconto"
+          in: "query"
+          description: "Se verdadeiro, exibe apenas produtos com desconto"
+          required: false
+          type: "boolean"
+          default: false
+        - name: "ordenacao"
+          in: "query"
+          description: "Ordenação da listagem de produtos. É possível ordenar por preço (crescente ou decrescente), mais vendidos e lancamento."
+          required: false
+          type: "string"
+          enum:
+            - "precoAsc"
+            - "precoDesc"
+            - "maisVendidos"
+            - "lancamento"
       responses:
-        201:
-          description: 'Afiliacao criada com sucesso'
+        200:
+          description: "Operação realizada com sucesso."
           schema:
-            $ref: '#/definitions/Afiliacao'
+            type: "array"
+            items:
+              $ref: "#/definitions/Produtos"
         400:
           description: 'A requisição não pôde processada pelo servidor devido a um erro no cliente.'
           schema:
@@ -124,7 +172,107 @@ paths:
         429:
           description: 'Usuário submeteu muitas requisições em um intervalo de tempo'
           schema:
-            $ref: '#/definitions/TooManyResquests'
+            $ref: '#/definitions/TooManyRequests'
+        500:
+          description: 'Erro inesperado'
+          schema:
+            $ref: '#/definitions/InternalServerError'
+        503:
+          description: 'Serviço indisponível'
+          schema:
+            $ref: '#/definitions/Unavailable'
+
+  /produtos/categorias:
+    get:
+      tags:
+        - produtos
+      summary: "Listagem de categorias de produtos"
+      description: "Permite a listagem de categorias de produtos"
+      operationId: "listaCategorias"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Operação realizada com sucesso."
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Categoria"
+        400:
+          description: 'A requisição não pôde processada pelo servidor devido a um erro no cliente.'
+          schema:
+            $ref: '#/definitions/BadRequest'
+        401:
+          description: 'Usuário não autenticado para realizar a operação'
+          schema:
+            $ref: '#/definitions/Unauthorized'
+        403:
+          description: 'Usuário não possui permissão para criar uma afiliação'
+          schema:
+            $ref: '#/definitions/Forbidden'
+        408:
+          description: 'Tempo excedido'
+          schema:
+            $ref: '#/definitions/Timeout'
+        429:
+          description: 'Usuário submeteu muitas requisições em um intervalo de tempo'
+          schema:
+            $ref: '#/definitions/TooManyRequests'
+        500:
+          description: 'Erro inesperado'
+          schema:
+            $ref: '#/definitions/InternalServerError'
+        503:
+          description: 'Serviço indisponível'
+          schema:
+            $ref: '#/definitions/Unavailable'
+
+#### Afiliados
+  /afiliados:
+    post:
+      tags:
+        - afiliados
+      security:
+        - basicAuth: []
+      summary: Cria uma afiliação
+      description: 'Permite a criação de uma afiliação entre um usuário e o e-Commerce. '
+      operationId: criaAfiliacao
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: objeto afiliacao serializado
+          required: true
+          schema:
+            $ref: '#/definitions/Afiliacao'
+      responses:
+        201:
+          description: 'Afiliacao criada com sucesso'
+          schema:
+            $ref: '#/definitions/Afiliados'
+        400:
+          description: 'A requisição não pôde processada pelo servidor devido a um erro no cliente.'
+          schema:
+            $ref: '#/definitions/BadRequest'
+        401:
+          description: 'Usuário não autenticado para realizar a operação'
+          schema:
+            $ref: '#/definitions/Unauthorized'
+        403:
+          description: 'Usuário não possui permissão para criar uma afiliação'
+          schema:
+            $ref: '#/definitions/Forbidden'
+        408:
+          description: 'Tempo excedido'
+          schema:
+            $ref: '#/definitions/Timeout'
+        429:
+          description: 'Usuário submeteu muitas requisições em um intervalo de tempo'
+          schema:
+            $ref: '#/definitions/TooManyRequests'
         500:
           description: 'Erro inesperado'
           schema:
@@ -136,6 +284,8 @@ paths:
     get:
       tags:
         - afiliados
+      security:
+        - basicAuth: []
       summary: "Buscar afiliados"
       description: "Permite recuperar a lista de afiliados cadastrados no CompraFacil"
       operationId: "getAfiliados"
@@ -192,7 +342,7 @@ paths:
         429:
           description: 'Usuário submeteu muitas requisições em um intervalo de tempo'
           schema:
-            $ref: '#/definitions/TooManyResquests'
+            $ref: '#/definitions/TooManyRequests'
         500:
           description: 'Erro inesperado'
           schema:
@@ -206,6 +356,8 @@ paths:
     put:
       tags:
         - afiliados
+      security:
+        - basicAuth: []
       summary: Atualiza os cados cadastrais de um afiliado, baseado no id 
       description: 'Permite a alteraçao dos dados cadastrais de um afiliado já cadastrado no e-Commerce. '
       operationId: updateAfiliacao
@@ -242,6 +394,10 @@ paths:
           description: 'Usuário não possui permissão para criar uma afiliação'
           schema:
             $ref: '#/definitions/Forbidden'
+        404:
+          description: 'Recurso não encontrado'
+          schema:
+            $ref: '#/definitions/NotFound'
         408:
           description: 'Tempo excedido'
           schema:
@@ -249,7 +405,7 @@ paths:
         429:
           description: 'Usuário submeteu muitas requisições em um intervalo de tempo'
           schema:
-            $ref: '#/definitions/TooManyResquests'
+            $ref: '#/definitions/TooManyRequests'
         500:
           description: 'Erro inesperado'
           schema:
@@ -262,6 +418,8 @@ paths:
     delete:
       tags:
         - afiliados
+      security:
+        - basicAuth: []
       summary: Remover um afiliado
       produces:
         - application/json
@@ -283,9 +441,13 @@ paths:
           schema:
             $ref: '#/definitions/Unauthorized'
         403:
-          description: 'Usuário não possui permissão para criar uma afiliação'
+          description: 'Usuário não possui permissão para remover uma afiliação'
           schema:
             $ref: '#/definitions/Forbidden'
+        404:
+          description: 'Recurso não encontrado'
+          schema:
+            $ref: '#/definitions/NotFound'
         408:
           description: 'Tempo excedido'
           schema:
@@ -293,7 +455,7 @@ paths:
         429:
           description: 'Usuário submeteu muitas requisições em um intervalo de tempo'
           schema:
-            $ref: '#/definitions/TooManyResquests'
+            $ref: '#/definitions/TooManyRequests'
         500:
           description: 'Erro inesperado'
           schema:
@@ -353,16 +515,31 @@ definitions:
         description: 'Detalhes técnicos do produto'
         type: array
         items:
-          type: array
-          items:
-            type: string
-            example: [
+          type: string
+        example: [
               'Memória RAM',
               '16Gb DDR4 2666MHz'
             ]
+            
     xml:
       name: Produtos
-  
+
+  Categoria:
+    type: object
+    required:
+      - id
+      - nome
+    properties:
+      id:
+        type: string
+        example: abcdefg
+      nome:
+        type: string
+        description: 'Nome da categoria de produto'
+        example: 'Livros'
+        minLength: 1
+        maxLength: 50
+
   Afiliacao:
     type: object
     required:
@@ -539,6 +716,23 @@ definitions:
         type: string
         description: 'Timestamp da execução da requisição'
         example: '2021-09-21T17:32:28Z'
+  
+  NotFound:
+    type: object
+    properties:
+      error_message:
+        type: string
+        description: 'Recurso não encontrado'
+        example: 'Recurso não encontrado'
+      status:
+        type: integer
+        format: int32
+        description: 'Código HTTP da requisição'
+        example: 404
+      timestamp:
+        type: string
+        description: 'Timestamp da execução da requisição'
+        example: '2021-09-21T17:32:28Z'
 
   Timeout:
     type: object
@@ -557,7 +751,7 @@ definitions:
         description: 'Timestamp da execução da requisição'
         example: '2021-09-21T17:32:28Z'
 
-  TooManyResquests:
+  TooManyRequests:
     type: object
     properties:
       error_message:
@@ -612,17 +806,8 @@ definitions:
 #                           Security Definitions                           #
 ############################################################################
 securityDefinitions:
-  api_key:
-    type: apiKey
-    name: api_key
-    in: header
-  petstore_auth:
-    type: oauth2
-    authorizationUrl: https://petstore.swagger.io/oauth/authorize
-    flow: implicit
-    scopes:
-      read:pets: read your pets
-      write:pets: modify pets in your account
+  basicAuth:
+    type: basic
 
 ############################################################################
 #                              External Docs                               #
