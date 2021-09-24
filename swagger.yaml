@@ -480,9 +480,8 @@ definitions:
       - detalhes
     properties:
       id:
-        type: integer
-        format: int64
-        example: 1293012939
+        type: string
+        example: a234512-0064-4082-b4f4-e6031448293c
       nome:
         type: string
         description: 'Nome do produto'
