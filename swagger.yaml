@@ -294,10 +294,15 @@ paths:
           name: _limit
           description: Identifica o número de registros retornados.
           type: integer
+          default: 10
+          minimum: 10
+          maximum: 50
         - in: query
           name: _offset
           description: Identifica o índice de paginação a ser retornado.
           type: integer
+          minimum: 1
+          default: 1
         - in: query
           name: nome
           description: Filtrar a busca pelo nome do afiliado.
