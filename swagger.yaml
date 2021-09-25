@@ -99,7 +99,6 @@ paths:
           in: query
           description: Identifica o número de registros retornados.
           type: integer
-          required: true
           default: 10
           minimum: 10
           maximum: 50
@@ -107,7 +106,6 @@ paths:
           in: query
           description: Identifica o índice de paginação a ser retornado.
           type: integer
-          required: true
           minimum: 1
           default: 1
         - name: "nome"
@@ -182,7 +180,7 @@ paths:
           schema:
             $ref: '#/definitions/Unavailable'
 
-  /produtos/categorias:
+  /categorias:
     get:
       tags:
         - produtos
